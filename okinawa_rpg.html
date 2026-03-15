@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>琉球タイムトラベル RPG ～王宇翔の沖縄探求～</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+:root{
+  --coral:#E8604C; --ocean:#1A7AB5; --sand:#F5E6C8;
+  --deep:#0e1628; --gold:#D4A843; --teal:#2E8B82;
+  --light:#FFF8EE; --hibiscus:#E8324C; --ryukyu:#8B2252;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--deep); color:var(--light);
+  min-height:100vh; overflow-x:hidden;
+}
+
+/* ====== GLOBAL BG ====== */
+.global-bg{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(160deg,#060d1f 0%,#0e1a35 35%,#071520 65%,#050f18 100%);
+}
+/* Ocean shimmer */
+.global-bg::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:35%;
+  background:linear-gradient(0deg,rgba(10,60,100,.55) 0%,transparent 100%);
+  animation:oceanShimmer 6s ease-in-out infinite alternate;
+}
+@keyframes oceanShimmer{0%{opacity:.7;}100%{opacity:1;}}
+
+/* Stars */
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.star{
+  position:absolute;background:#fff;border-radius:50%;
+  animation:twinkle var(--dur) ease-in-out infinite alternate;
+}
+@keyframes twinkle{0%{opacity:.15;transform:scale(1);}100%{opacity:.95;transform:scale(1.5);}}
+
+/* ====== LAYOUT ====== */
+#wrap{
+  position:relative;z-index:10;
+  max-width:880px;margin:0 auto;
+  padding:16px 14px 50px;
+  display:flex;flex-direction:column;gap:14px;
+}
+
+/* ====== HEADER ====== */
+.hdr{text-align:center;padding:18px 0 6px;}
+.hdr-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(18px,3.8vw,30px);
+  color:var(--gold);
+  text-shadow:0 0 24px rgba(212,168,67,.6);
+  letter-spacing:.06em;line-height:1.35;
+}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:5px;letter-spacing:.12em;}
+
+/* ====== PROGRESS ====== */
+.prog-row{display:flex;align-items:center;gap:10px;padding:0 2px;}
+.prog-lbl{font-size:11px;color:var(--gold);font-weight:700;white-space:nowrap;}
+.prog-bg{flex:1;height:9px;background:rgba(255,255,255,.09);border-radius:5px;overflow:hidden;border:1px solid rgba(212,168,67,.18);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:5px;transition:width .6s ease;width:0%;}
+.score-lbl{font-size:12px;color:var(--gold);font-weight:700;white-space:nowrap;}
+.dots{display:flex;justify-content:center;gap:7px;padding:2px 0;}
+.dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.13);border:1.5px solid rgba(255,255,255,.18);transition:all .3s;}
+.dot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 7px var(--gold);}
+.dot.done{background:var(--teal);border-color:var(--teal);}
+
+/* ====== SCENE CARD ====== */
+.card{
+  background:linear-gradient(145deg,rgba(255,248,238,.055),rgba(255,248,238,.018));
+  border:1px solid rgba(212,168,67,.22);border-radius:22px;overflow:hidden;
+  backdrop-filter:blur(12px);
+  box-shadow:0 10px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.045);
+  animation:cardIn .45s ease;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ====== STAGE BANNER ====== */
+.s-banner{
+  padding:13px 22px;display:flex;align-items:center;gap:11px;
+  border-bottom:1px solid rgba(212,168,67,.18);
+}
+.s-banner.b1{background:linear-gradient(135deg,rgba(110,60,20,.45),rgba(200,140,50,.2));}
+.s-banner.b2{background:linear-gradient(135deg,rgba(20,90,160,.45),rgba(40,130,120,.2));}
+.s-banner.b3{background:linear-gradient(135deg,rgba(180,60,50,.45),rgba(200,140,50,.2));}
+.s-banner.bR{background:linear-gradient(135deg,rgba(180,130,30,.3),rgba(40,130,120,.2));}
+.s-ico{font-size:26px;}
+.s-num{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.15em;}
+.s-name{font-family:'Noto Serif JP',serif;font-size:16px;color:var(--gold);font-weight:700;margin-top:1px;}
+.s-era{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;}
+
+/* ====== CSS SCENE ART ====== */
+.scene-art{width:100%;height:190px;position:relative;overflow:hidden;}
+
+/* --- SCENE 1: 首里城 --- */
+.art-shuri{background:linear-gradient(180deg,#0d1830 0%,#1a2a4a 25%,#c45f20 58%,#8B3a10 75%,#5a2008 100%);}
+/* Sky stars */
+.art-shuri .sky-star{position:absolute;background:#fffde0;border-radius:50%;animation:twinkle var(--dur) ease-in-out infinite alternate;}
+/* Moon */
+.art-shuri .moon{
+  position:absolute;top:14px;right:55px;
+  width:38px;height:38px;border-radius:50%;
+  background:radial-gradient(circle at 38% 38%,#fffff0,#e8d870);
+  box-shadow:0 0 18px 6px rgba(255,250,180,.35);
+}
+/* Castle base */
+.art-shuri .castle-base{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:320px;height:90px;
+  background:linear-gradient(180deg,#c0401a 0%,#8c2c0e 55%,#5a1c06 100%);
+  border-radius:4px 4px 0 0;
+}
+/* Roof tier 1 */
+.art-shuri .roof1{
+  position:absolute;bottom:82px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:170px solid transparent;
+  border-right:170px solid transparent;
+  border-bottom:44px solid #c0401a;
+  filter:drop-shadow(0 -3px 6px rgba(200,80,20,.4));
+}
+/* Roof tier 2 */
+.art-shuri .roof2{
+  position:absolute;bottom:110px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:110px solid transparent;
+  border-right:110px solid transparent;
+  border-bottom:36px solid #d44e22;
+}
+/* Top spire */
+.art-shuri .spire{
+  position:absolute;bottom:140px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:55px solid transparent;
+  border-right:55px solid transparent;
+  border-bottom:30px solid #e8602a;
+}
+/* Windows */
+.art-shuri .win{
+  position:absolute;background:#ffcc44;
+  width:12px;height:16px;border-radius:2px 2px 0 0;
+  box-shadow:0 0 6px rgba(255,200,50,.6);
+}
+/* Trees */
+.art-shuri .tree{
+  position:absolute;bottom:0;
+  width:22px;height:50px;background:linear-gradient(180deg,#1a6b1a,#0d4a0d);
+  border-radius:50% 50% 5px 5px;
+}
+/* Ground */
+.art-shuri .ground{
+  position:absolute;bottom:0;left:0;right:0;height:22px;
+  background:linear-gradient(90deg,#3a2010,#5a3018,#3a2010);
+}
+/* Lanterns */
+.art-shuri .lantern{
+  position:absolute;background:radial-gradient(#ff6644,#cc2200);
+  width:10px;height:14px;border-radius:50%;
+  box-shadow:0 0 8px rgba(255,80,30,.7);
+  animation:lanternSwing 3s ease-in-out infinite alternate;
+  transform-origin:top center;
+}
+@keyframes lanternSwing{0%{transform:rotate(-8deg);}100%{transform:rotate(8deg);}}
+
+/* --- SCENE 2: 海辺・珊瑚礁 --- */
+.art-sea{background:linear-gradient(180deg,#0a1f3d 0%,#0d3060 20%,#0d5080 45%,#0d7090 65%,#12a090 80%,#18d0a8 90%,#d4c060 95%,#c8a840 100%);}
+/* Sun */
+.art-sea .sun{
+  position:absolute;top:18px;left:65px;
+  width:50px;height:50px;border-radius:50%;
+  background:radial-gradient(circle,#fff8c0,#ffcc00,#ff9900);
+  box-shadow:0 0 30px 12px rgba(255,200,0,.4);
+  animation:sunPulse 4s ease-in-out infinite alternate;
+}
+@keyframes sunPulse{0%{box-shadow:0 0 25px 8px rgba(255,200,0,.35);}100%{box-shadow:0 0 40px 16px rgba(255,200,0,.5);}}
+/* Clouds */
+.art-sea .cloud{
+  position:absolute;background:rgba(255,255,255,.55);border-radius:50px;
+  box-shadow:0 0 0 10px rgba(255,255,255,.25);
+}
+/* Waves */
+.art-sea .wave{
+  position:absolute;border-radius:50%;
+  border:3px solid rgba(255,255,255,.35);
+  animation:waveRipple 3s ease-in-out infinite;
+}
+@keyframes waveRipple{
+  0%{transform:scaleX(1);opacity:.7;}
+  50%{transform:scaleX(1.05);opacity:.9;}
+  100%{transform:scaleX(1);opacity:.7;}
+}
+/* Coral */
+.art-sea .coral{
+  position:absolute;bottom:18px;
+  background:var(--hibiscus);
+  border-radius:50% 50% 30% 30%;
+  animation:coralSway 4s ease-in-out infinite alternate;
+  transform-origin:bottom center;
+}
+@keyframes coralSway{0%{transform:rotate(-5deg);}100%{transform:rotate(5deg);}}
+/* Fish */
+.art-sea .fish{
+  position:absolute;font-size:18px;
+  animation:fishSwim 6s linear infinite;
+}
+@keyframes fishSwim{0%{left:-40px;opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{left:110%;opacity:0;}}
+/* Sand */
+.art-sea .sand{
+  position:absolute;bottom:0;left:0;right:0;height:28px;
+  background:linear-gradient(180deg,#d4c060,#b09030);
+  border-radius:60% 60% 0 0 / 30px 30px 0 0;
+}
+/* Sea shell */
+.art-sea .shell{position:absolute;bottom:4px;font-size:14px;}
+
+/* --- SCENE 3: 夕暮れの沖縄 --- */
+.art-sunset{background:linear-gradient(180deg,#1a0830 0%,#3d0d20 15%,#8B2040 30%,#cc4422 45%,#e87030 58%,#f4aa40 72%,#1a4a70 82%,#0a2050 100%);}
+/* Sunset sun */
+.art-sunset .setsun{
+  position:absolute;top:55px;left:50%;transform:translateX(-50%);
+  width:58px;height:58px;border-radius:50%;
+  background:radial-gradient(circle,#fff5a0,#ffcc00,#ff8800,#dd4400);
+  box-shadow:0 0 40px 18px rgba(255,120,20,.5);
+}
+/* Horizon glow */
+.art-sunset .horizon{
+  position:absolute;bottom:70px;left:0;right:0;height:30px;
+  background:linear-gradient(180deg,rgba(255,120,30,.4),transparent);
+}
+/* Ocean */
+.art-sunset .ocean{
+  position:absolute;bottom:0;left:0;right:0;height:70px;
+  background:linear-gradient(180deg,#1060a0,#082050);
+}
+/* Reflection */
+.art-sunset .reflection{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  width:30px;
+  background:linear-gradient(180deg,rgba(255,200,60,.7),transparent);
+  animation:reflectWave 2s ease-in-out infinite alternate;
+}
+@keyframes reflectWave{0%{width:24px;opacity:.8;}100%{width:36px;opacity:.6;}}
+/* Hibiscus flowers */
+.art-sunset .hibiscus{position:absolute;font-size:22px;animation:hibiscusSway 5s ease-in-out infinite alternate;}
+@keyframes hibiscusSway{0%{transform:rotate(-6deg) scale(1);}100%{transform:rotate(6deg) scale(1.05);}}
+/* Sanshin silhouette */
+.art-sunset .sanshin-wrap{
+  position:absolute;bottom:62px;right:70px;
+  animation:sanshinBob 4s ease-in-out infinite alternate;
+}
+@keyframes sanshinBob{0%{transform:translateY(0);}100%{transform:translateY(-5px);}}
+.sanshin-body{width:12px;height:32px;background:#1a0a00;border-radius:3px 3px 0 0;margin:auto;}
+.sanshin-head{width:18px;height:18px;background:#2a1008;border-radius:50%;margin:auto;}
+.sanshin-neck{width:4px;height:20px;background:#1a0808;margin:auto;}
+.sanshin-note{position:absolute;font-size:12px;top:-14px;left:14px;animation:noteFloat 3s ease-in-out infinite;}
+@keyframes noteFloat{0%,100%{transform:translateY(0) rotate(-10deg);opacity:.8;}50%{transform:translateY(-8px) rotate(10deg);opacity:1;}}
+/* Beach */
+.art-sunset .beach{
+  position:absolute;bottom:0;left:0;right:0;height:35px;
+  background:linear-gradient(180deg,#c8a830,#8a7020);
+  border-radius:70% 70% 0 0 / 30px 30px 0 0;
+}
+
+/* --- TITLE ART --- */
+.art-title{
+  height:220px;
+  background:linear-gradient(180deg,#03061a 0%,#060d2a 25%,#0a1840 50%,#041520 75%,#02100a 100%);
+}
+/* Big moon */
+.art-title .big-moon{
+  position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  width:80px;height:80px;border-radius:50%;
+  background:radial-gradient(circle at 40% 38%,#fffff8,#e8e060 50%,#b8a820);
+  box-shadow:0 0 40px 16px rgba(230,220,80,.3);
+}
+/* Silhouette island */
+.art-title .island{
+  position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  width:240px;height:60px;
+  background:linear-gradient(180deg,#0a1c0a,#04100a);
+  border-radius:60% 60% 0 0;
+}
+/* Palm trees on island */
+.art-title .palm{position:absolute;bottom:90px;font-size:36px;}
+/* Title ocean */
+.art-title .t-ocean{
+  position:absolute;bottom:0;left:0;right:0;height:42px;
+  background:linear-gradient(180deg,#0a3060,#050d30);
+}
+/* Title reflection */
+.art-title .t-ref{
+  position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+  width:4px;height:32px;
+  background:linear-gradient(180deg,rgba(220,210,70,.8),transparent);
+  animation:reflectWave 2.5s ease-in-out infinite alternate;
+  border-radius:2px;
+}
+
+.art-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.55) 100%);
+  z-index:2;
+}
+
+/* ====== PLAYER CARD (main character) ====== */
+.player-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 22px;
+  background:linear-gradient(135deg,rgba(255,248,220,.06),rgba(40,130,120,.05));
+  border-bottom:1px solid rgba(212,168,67,.12);
+}
+.player-avatar-wrap{position:relative;}
+.player-avatar{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,#3a6aaa,#1a3a80);
+  border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+  box-shadow:0 0 12px rgba(212,168,67,.35);
+}
+.player-badge{
+  position:absolute;bottom:-3px;right:-3px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--gold);color:var(--deep);
+  font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--deep);
+}
+.player-info{flex:1;}
+.player-name{font-size:13px;font-weight:700;color:var(--gold);}
+.player-role{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;}
+.player-status{
+  font-size:10px;
+  padding:3px 9px;border-radius:20px;
+  border:1px solid rgba(46,200,100,.4);
+  color:rgba(100,255,150,.8);
+  background:rgba(46,200,100,.08);
+}
+
+/* ====== DIALOGUE ====== */
+.dlg-section{padding:18px 22px;}
+.npc-dlg{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.npc-av{
+  width:50px;height:50px;border-radius:50%;
+  border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+  background:rgba(212,168,67,.1);
+  box-shadow:0 0 10px rgba(212,168,67,.3);
+  animation:avGlow 2s ease-in-out infinite alternate;
+}
+@keyframes avGlow{0%{box-shadow:0 0 7px rgba(212,168,67,.28);}100%{box-shadow:0 0 16px rgba(212,168,67,.6);}}
+.npc-body{flex:1;}
+.npc-nm{font-size:10px;color:var(--gold);font-weight:700;letter-spacing:.08em;margin-bottom:5px;}
+.npc-txt{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:0 13px 13px 13px;
+  padding:11px 15px;font-size:13.5px;line-height:1.85;
+  color:rgba(255,255,255,.88);position:relative;
+}
+.npc-txt::before{
+  content:'';position:absolute;left:-8px;top:11px;
+  border:8px solid transparent;
+  border-right-color:rgba(255,255,255,.055);
+}
+
+/* Player reply bubble */
+.player-reply{
+  display:flex;flex-direction:row-reverse;gap:12px;align-items:flex-start;
+  margin-top:10px;
+}
+.p-av{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#2a5090,#132060);
+  border:2px solid rgba(100,160,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.p-txt{
+  background:rgba(40,80,160,.2);
+  border:1px solid rgba(100,150,255,.18);
+  border-radius:13px 0 13px 13px;
+  padding:9px 14px;font-size:12.5px;line-height:1.7;
+  color:rgba(180,210,255,.9);
+  font-style:italic;
+}
+
+.know-card{
+  background:linear-gradient(135deg,rgba(46,139,130,.14),rgba(26,122,181,.09));
+  border:1px solid rgba(46,139,130,.32);
+  border-radius:13px;padding:13px 16px;
+  margin-top:12px;font-size:12.5px;line-height:1.85;
+  color:rgba(255,255,255,.78);
+}
+.know-title{
+  font-size:10px;color:var(--teal);font-weight:700;
+  letter-spacing:.12em;margin-bottom:5px;
+  display:flex;align-items:center;gap:5px;
+}
+
+/* ====== QUIZ ====== */
+.quiz-wrap{padding:0 22px 22px;}
+.quiz-q{
+  background:rgba(212,168,67,.075);
+  border:1px solid rgba(212,168,67,.22);
+  border-radius:13px;padding:15px 18px;margin-bottom:14px;
+}
+.q-header{display:flex;align-items:center;gap:7px;margin-bottom:9px;}
+.q-badge{
+  background:var(--gold);color:var(--deep);
+  font-size:9px;font-weight:700;padding:2px 7px;
+  border-radius:20px;letter-spacing:.07em;
+}
+.q-num{font-size:10px;color:rgba(255,255,255,.38);}
+.q-text{font-size:14.5px;font-weight:700;color:#fff;line-height:1.65;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+@media(max-width:500px){.opts{grid-template-columns:1fr;}}
+.opt{
+  background:rgba(255,255,255,.048);
+  border:1.5px solid rgba(255,255,255,.14);
+  border-radius:11px;padding:11px 14px;
+  font-size:12.5px;color:rgba(255,255,255,.83);
+  cursor:pointer;text-align:left;
+  transition:all .18s ease;
+  font-family:'Noto Sans JP',sans-serif;
+  line-height:1.5;position:relative;overflow:hidden;
+}
+.opt::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(212,168,67,.1),transparent);
+  opacity:0;transition:opacity .18s;
+}
+.opt:hover:not(:disabled)::after{opacity:1;}
+.opt:hover:not(:disabled){
+  border-color:rgba(212,168,67,.48);
+  transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(212,168,67,.14);
+}
+.opt.correct{
+  background:rgba(46,200,100,.19);border-color:#2EC864;
+  color:#7FFFA0;animation:correctPop .45s ease;
+}
+.opt.wrong{
+  background:rgba(232,96,76,.18);border-color:var(--coral);
+  color:#FFAAAA;animation:shake .38s ease;
+}
+@keyframes correctPop{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+.opt:disabled{cursor:default;}
+.fb{
+  margin-top:11px;padding:11px 15px;border-radius:11px;
+  font-size:12.5px;line-height:1.75;display:none;animation:fbIn .35s ease;
+}
+.fb.show{display:block;}
+.fb.fb-ok{background:rgba(46,200,100,.11);border:1px solid rgba(46,200,100,.28);color:#90FFB0;}
+.fb.fb-ng{background:rgba(232,96,76,.11);border:1px solid rgba(232,96,76,.28);color:#FFBBBB;}
+@keyframes fbIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+/* ====== BUTTONS ====== */
+.act{padding:0 22px 22px;display:flex;justify-content:center;gap:11px;flex-wrap:wrap;}
+.btn-p{
+  background:linear-gradient(135deg,var(--gold),#b87c08);
+  color:var(--deep);border:none;border-radius:50px;
+  padding:13px 34px;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  transition:all .22s;box-shadow:0 4px 18px rgba(212,168,67,.32);
+  letter-spacing:.05em;
+}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 7px 26px rgba(212,168,67,.48);}
+.btn-p:active{transform:translateY(0);}
+.btn-p:disabled{
+  background:rgba(255,255,255,.09);color:rgba(255,255,255,.28);
+  box-shadow:none;cursor:not-allowed;transform:none;
+}
+.btn-s{
+  background:transparent;color:rgba(255,255,255,.65);
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:50px;padding:11px 26px;font-size:13px;
+  cursor:pointer;font-family:'Noto Sans JP',sans-serif;
+  transition:all .18s;
+}
+.btn-s:hover{border-color:rgba(255,255,255,.48);color:#fff;}
+
+/* ====== TITLE SCREEN ====== */
+.title-inner{text-align:center;padding:18px 22px 28px;}
+.t-main{
+  font-family:'Noto Serif JP',serif;
+  font-size:clamp(20px,4.5vw,34px);
+  color:var(--gold);
+  text-shadow:0 0 28px rgba(212,168,67,.65),0 0 55px rgba(212,168,67,.3);
+  line-height:1.3;margin:14px 0 6px;
+}
+.t-sub{font-size:12px;color:rgba(255,255,255,.55);letter-spacing:.12em;margin-bottom:18px;}
+.t-desc{
+  background:rgba(255,255,255,.038);border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;padding:16px 18px;
+  font-size:12.5px;line-height:1.95;color:rgba(255,255,255,.72);
+  text-align:left;margin-bottom:18px;
+}
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px;}
+.t-item{
+  background:rgba(212,168,67,.07);border:1px solid rgba(212,168,67,.18);
+  border-radius:11px;padding:11px 6px;text-align:center;
+}
+.t-ico{font-size:20px;margin-bottom:3px;}
+.t-lbl{font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.07em;}
+.t-val{font-size:11px;color:var(--gold);font-weight:700;margin-top:1px;}
+/* Hero character preview on title */
+.hero-preview{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  background:rgba(30,70,150,.12);border:1px solid rgba(100,160,255,.15);
+  border-radius:14px;padding:13px 18px;margin-bottom:18px;
+}
+.hero-ava-big{
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#2a5aaa,#0e2560);
+  border:2px solid rgba(130,180,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;flex-shrink:0;
+  box-shadow:0 0 14px rgba(100,160,255,.3);
+}
+.hero-text{text-align:left;}
+.hero-name{font-size:15px;font-weight:700;color:#aaccff;}
+.hero-name-cn{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;}
+.hero-desc{font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;line-height:1.6;}
+
+/* ====== RESULT ====== */
+.result-inner{padding:18px 22px 28px;text-align:center;}
+.r-circle{
+  width:120px;height:120px;border-radius:50%;
+  border:4px solid var(--gold);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:14px auto;
+  background:radial-gradient(circle,rgba(212,168,67,.14),transparent);
+  box-shadow:0 0 28px rgba(212,168,67,.28),inset 0 0 28px rgba(212,168,67,.05);
+  animation:rAppear .75s ease backwards;
+}
+@keyframes rAppear{from{transform:scale(.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+.r-num{font-family:'Noto Serif JP',serif;font-size:36px;color:var(--gold);font-weight:700;line-height:1;}
+.r-tot{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;}
+.r-rank-ico{font-size:26px;margin:6px 0 3px;}
+.r-rank-txt{font-family:'Noto Serif JP',serif;font-size:19px;color:var(--gold);font-weight:700;margin-bottom:5px;}
+.r-msg{font-size:12.5px;color:rgba(255,255,255,.68);line-height:1.85;margin-bottom:18px;padding:0 8px;}
+.r-review{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;padding:14px 16px;text-align:left;margin-bottom:18px;
+}
+.r-rev-ttl{font-size:10px;color:var(--teal);font-weight:700;letter-spacing:.12em;margin-bottom:8px;}
+.rev-row{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:5px 0;border-bottom:1px solid rgba(255,255,255,.045);
+  font-size:11.5px;color:rgba(255,255,255,.65);line-height:1.5;
+}
+.rev-row:last-child{border-bottom:none;}
+.rev-ico{font-size:14px;flex-shrink:0;margin-top:1px;}
+.r-msg-box{
+  background:rgba(46,139,130,.09);border:1px solid rgba(46,139,130,.28);
+  border-radius:13px;padding:13px 16px;margin-bottom:18px;
+  font-size:12.5px;line-height:1.85;color:rgba(255,255,255,.72);text-align:left;
+}
+.r-msg-title{font-size:10px;color:#2E8B82;font-weight:700;letter-spacing:.12em;margin-bottom:7px;}
+
+/* ====== PARTICLES ====== */
+.particles{position:fixed;inset:0;pointer-events:none;z-index:50;}
+.ptcl{position:absolute;font-size:17px;animation:ptclFall linear forwards;opacity:0;}
+@keyframes ptclFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+/* ====== MULTIMODAL: 音楽問題 ====== */
+.modal-music-box{
+  margin:0 0 14px;
+  background:linear-gradient(135deg,rgba(26,60,120,.3),rgba(46,139,130,.15));
+  border:1px solid rgba(100,160,255,.25);
+  border-radius:14px; overflow:hidden;
+}
+.music-player{padding:16px 18px; display:flex; flex-direction:column; gap:12px;}
+.music-wave{
+  display:flex; align-items:flex-end; justify-content:center;
+  gap:4px; height:44px;
+}
+.wave-bar{
+  width:5px; border-radius:3px;
+  background:linear-gradient(180deg,rgba(100,180,255,.3),rgba(46,139,130,.2));
+  height:8px;
+  transition:height .1s;
+}
+.music-wave.playing .wave-bar{
+  animation:waveAnim .6s ease-in-out infinite alternate;
+  background:linear-gradient(180deg,#64b4ff,#2E8B82);
+}
+.wave-bar:nth-child(1){animation-delay:.00s}
+.wave-bar:nth-child(2){animation-delay:.05s}
+.wave-bar:nth-child(3){animation-delay:.10s}
+.wave-bar:nth-child(4){animation-delay:.15s}
+.wave-bar:nth-child(5){animation-delay:.20s}
+.wave-bar:nth-child(6){animation-delay:.25s}
+.wave-bar:nth-child(7){animation-delay:.30s}
+.wave-bar:nth-child(8){animation-delay:.25s}
+.wave-bar:nth-child(9){animation-delay:.20s}
+.wave-bar:nth-child(10){animation-delay:.15s}
+.wave-bar:nth-child(11){animation-delay:.10s}
+.wave-bar:nth-child(12){animation-delay:.05s}
+@keyframes waveAnim{
+  0%{height:6px;} 50%{height:36px;} 100%{height:10px;}
+}
+.music-controls{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+.music-btn{
+  background:linear-gradient(135deg,#1a5090,#2E8B82);
+  color:white; border:none; border-radius:50px;
+  padding:10px 22px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family:'Noto Sans JP',sans-serif;
+  transition:all .2s;
+  box-shadow:0 3px 12px rgba(30,100,180,.35);
+}
+.music-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 18px rgba(30,100,180,.5);}
+.music-btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+.music-label{font-size:11px; color:rgba(180,210,255,.7); flex:1;}
+
+/* ====== MULTIMODAL: 画像問題 ====== */
+.modal-img-box{
+  margin:0 0 14px;
+  background:linear-gradient(135deg,rgba(80,40,10,.25),rgba(140,80,20,.1));
+  border:1px solid rgba(212,168,67,.2);
+  border-radius:14px; padding:16px; text-align:center;
+}
+.img-q-frame{
+  display:inline-flex; flex-direction:column; align-items:center; gap:8px;
+  background:rgba(255,248,220,.05); border:1px solid rgba(212,168,67,.15);
+  border-radius:12px; padding:12px 20px;
+}
+.shisa-svg{
+  width:180px; height:180px;
+  filter:drop-shadow(0 4px 12px rgba(200,100,20,.4));
+  animation:shisaPulse 3s ease-in-out infinite alternate;
+}
+@keyframes shisaPulse{
+  0%{filter:drop-shadow(0 4px 12px rgba(200,100,20,.4));}
+  100%{filter:drop-shadow(0 6px 20px rgba(255,130,30,.65));}
+}
+.img-caption{
+  font-size:12px; color:rgba(255,255,255,.5);
+  letter-spacing:.08em; font-style:italic;
+}
+</style>
+</head>
+<body>
+<div class="global-bg"></div>
+<div class="stars" id="stars"></div>
+<div class="particles" id="particles"></div>
+
+<div id="wrap">
+  <div class="hdr">
+    <div class="hdr-title">🌺 琉球タイムトラベル RPG</div>
+    <div class="hdr-sub">王宇翔の沖縄多文化探求の旅 ～ 歴史と現在をめぐる冒険</div>
+  </div>
+
+  <div class="prog-row" id="prog-row" style="display:none">
+    <div class="prog-lbl">進行度</div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="score-lbl" id="score-lbl">0/9点</div>
+  </div>
+  <div class="dots" id="dots" style="display:none">
+    <div class="dot" id="dot-1"></div>
+    <div class="dot" id="dot-2"></div>
+    <div class="dot" id="dot-3"></div>
+  </div>
+
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+// ── STARS ──
+(()=>{
+  const c=document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.8+.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${Math.random()*3+1.8}s;animation-delay:${Math.random()*4}s`;
+    c.appendChild(s);
+  }
+})();
+
+const PLAYER = { name:'王宇翔', nameJp:'オウ・ウショウ', emoji:'👨‍🎓' };
+
+// ── STAGE DATA ──
+const STAGES=[
+{
+  id:1,name:'那覇の市場',era:'琉球王国時代（15〜19世紀）',
+  icon:'🏯',artId:'shuri',bannerCls:'b1',
+  npc:{av:'🦁',name:'シーサー守護神'},
+  intro:[
+    `${PLAYER.nameJp}よ、ようこそ！\nわしは琉球の守護神・シーサーじゃ。\n君が沖縄に来てくれて、とても嬉しいぞ。`,
+    `ここは15世紀の首里城下町じゃ。\n琉球王国は中国・日本・東南アジアを\nつなぐ海上貿易で栄えた独立国家だったのじゃ。\n\n「万国津梁（ばんこくしんりょう）」——\nすべての国をつなぐ架け橋、という理念を持っておった。`,
+    `まずこの時代のことを学んでもらおう。\n3つの問いに正しく答えてみよ！\n${PLAYER.nameJp}なら、きっとできるはずじゃ！`
+  ],
+  playerReply:[
+    'シーサーさん、はじめまして！僕は王宇翔です。沖縄のことをもっと知りたいです！',
+    'なるほど…首里城は「万国津梁」の精神の象徴なんですね。',
+    'わかりました！頑張ります！'
+  ],
+  knowledge:'📜 琉球王国（1429〜1879年）は薩摩藩に統合される前まで独立国家として繁栄。首里城を政治・文化の中心とし、中国・日本・東南アジアとの中継貿易で豊かな独自文化を育んだ。',
+  quizzes:[
+    {q:'琉球王国の政治・文化の中心だった城の名前は？',
+     opts:['姫路城','首里城','大阪城','熊本城'],ans:1,
+     expl:'✅ 正解！首里城（しゅりじょう）は那覇市にあり、琉球王国の政治・文化の中心。2000年にユネスコ世界遺産に登録されました。'},
+    {q:'琉球王国が繁栄した主な経済活動は何？',
+     opts:['農業','鉱業','海上中継貿易','林業'],ans:2,
+     expl:'✅ 正解！琉球は東アジア・東南アジアの中間点という地理的優位を活かし、海上中継貿易で大きく繁栄しました。'},
+    {q:'「万国津梁の鐘」に刻まれた琉球の理念は？',
+     opts:['軍事強化','宗教統一','すべての国をつなぐ架け橋','農業革命'],ans:2,
+     expl:'✅ 正解！「万国津梁」は「世界の架け橋」を意味し、平和的な交易と国際交流を重んじた琉球の精神を象徴します。'},
+    {type:'image', q:'🖼️ 下の絵を見てください。これは何という沖縄の伝統的な守護像ですか？',
+     imgKey:'shisa',
+     opts:['ドラゴン','シーサー','狛犬（こまいぬ）','獅子舞'],ans:1,
+     expl:'✅ 正解！「シーサー」は沖縄の守護獣で、中国の獅子像が琉球を経て独自の姿に変化したもの。屋根や門の上に置かれ、魔除けと幸福招来の役割を持ちます。'}
+  ]
+},
+{
+  id:2,name:'海辺の村',era:'近代〜現代（19〜20世紀）',
+  icon:'⚓',artId:'sea',bannerCls:'b2',
+  npc:{av:'🧓',name:'ウチナーンチュの長老'},
+  intro:[
+    `やあ、${PLAYER.nameJp}よ。\nわしはうちなーんちゅ（沖縄人）の長老じゃ。\n沖縄は長い歴史の中で、多くの文化が\n混ざり合ってきた特別な場所なのじゃよ。`,
+    `1879年、琉球王国は日本に「琉球処分」として\n統合された。そして第二次大戦後は、\n1972年までアメリカの統治下に置かれた。\n\n中国・日本・アメリカ……様々な文化が\nこの小さな島で出会ったのじゃ。`,
+    `その複雑な歴史が沖縄の豊かな多文化を生んだ。\nこれが「ちゃんぷるー文化」と呼ばれるものじゃよ。\nさあ、第二の試練に挑んでみよ！`
+  ],
+  playerReply:[
+    'この珊瑚礁の海、すごく綺麗ですね…！長老、色々教えてください。',
+    '1879年から1972年まで、沖縄は本当に激動の時代を経験したんですね。',
+    '「ちゃんぷるー文化」…様々な文化が混ざり合う、それが沖縄の強みなんですね！'
+  ],
+  knowledge:'🌏 沖縄の多文化的背景：琉球文化をベースに、中国文化（冊封体制・漢字文化圏）、日本文化（大和文化）、アメリカ文化（1945〜1972年の米軍統治）が重なり合い、独自の「ちゃんぷるー文化圏」を形成した。',
+  quizzes:[
+    {q:'沖縄が日本に「本土復帰」したのはいつ？',
+     opts:['1945年','1952年','1972年','1995年'],ans:2,
+     expl:'✅ 正解！1972年5月15日、沖縄は日本に返還されました。それまでの27年間、アメリカの施政権下に置かれていました。'},
+    {q:'「ちゃんぷるー文化」とは何を意味する？',
+     opts:['伝統的な武道文化','様々な文化が混ざり合った文化','漁業中心の文化','農耕祭祀文化'],ans:1,
+     expl:'✅ 正解！「ちゃんぷるー」は沖縄語で「混ぜる」の意。料理名でもあり、多文化が混ざり合う沖縄精神の象徴でもあります。'},
+    {q:'沖縄の方言（ウチナーグチ）で「ありがとう」は？',
+     opts:['はいさい','にふぇーでーびる','うちなー','ちゅらさん'],ans:1,
+     expl:'✅ 正解！「にふぇーでーびる」（ニフェーデービル）は琉球語で「ありがとうございます」を意味する丁寧な感謝表現です。'},
+    {type:'music', q:'🎵 下の「再生」ボタンを押して音を聴いてください。この音色は何の楽器ですか？',
+     soundKey:'sanshin',
+     opts:['ギター','三線（さんしん）','琵琶（びわ）','バイオリン'],ans:1,
+     expl:'✅ 正解！今聴いたのは三線（さんしん）の音色です。胴にヘビ皮を張った沖縄伝統の弦楽器で、中国の三弦が起源。独特の響きが沖縄民謡に欠かせません。'}
+  ]
+},
+{
+  id:3,name:'現代の沖縄',era:'現代（21世紀）',
+  icon:'🌺',artId:'sunset',bannerCls:'b3',
+  npc:{av:'👩',name:'沖縄の若者・ハナ'},
+  intro:[
+    `は〜いさい、${PLAYER.nameJp}！はじめまして！\nわたしは那覇生まれのハナだよ。\n現代の沖縄のこと、案内するね！`,
+    `今の沖縄はとっても魅力的なんだよ。\n伝統の三線（さんしん）の音色、\nエイサーの太鼓の響き……\nそれがポップスやロックと融合してるの。\n\n「ちむどんどん」って言葉、知ってる？\n心がワクワクドキドキするって意味だよ！`,
+    `沖縄料理も独特でね。\nゴーヤーチャンプルー、ラフテー、沖縄そば……\n全部美味しいよ！最後の試練、一緒に頑張ろう！`
+  ],
+  playerReply:[
+    'ハナさん、よろしく！三線の音って、聞いたことあるけど本当に美しいですよね。',
+    '「ちむどんどん」…まさに今の僕の気持ちです！沖縄のことを知るほど、もっと知りたくなる！',
+    'わかりました！最後まで頑張ります！'
+  ],
+  knowledge:'🎵 現代沖縄文化：三線（中国の三弦楽器が起源）、エイサー（お盆の伝統舞踊）が現代音楽と融合。沖縄料理は豚肉・ゴーヤー文化が特徴で、平均寿命の高さでも有名。「ちむどんどん」はNHK朝ドラの題材にもなった。',
+  quizzes:[
+    {q:'沖縄の伝統楽器「三線（さんしん）」の起源はどこ？',
+     opts:['日本本土','中国','アメリカ','インドネシア'],ans:1,
+     expl:'✅ 正解！三線は中国の「三弦（さんげん）」が琉球に伝わったもの。ヘビ皮を使った独特の音色が特徴で、現代の沖縄音楽にも生き続けています。'},
+    {q:'ゴーヤーチャンプルーの主な材料は？',
+     opts:['ゴーヤー・豆腐・豚肉','ゴーヤー・さつまいも・魚','ゴーヤー・うどん・牛肉','ゴーヤー・米・鶏肉'],ans:0,
+     expl:'✅ 正解！ゴーヤーチャンプルーはゴーヤー（苦瓜）・豆腐・豚肉・卵を炒めた沖縄の代表的家庭料理。ビタミンCが豊富です。'},
+    {q:'「ちむどんどん」の意味は？',
+     opts:['お腹が空いた','心がワクワクドキドキする','海が荒れている','夕日がきれい'],ans:1,
+     expl:'✅ 正解！「ちむ」は沖縄語で「心・肝」。NHKの連続テレビ小説のタイトルにもなった、沖縄らしい感情表現です。'},
+    {type:'music', q:'🎵 沖縄のお盆に踊る伝統芸能「エイサー」。下のボタンで太鼓のリズムを聴いて、エイサーの特徴として正しいものを選んでください！',
+     soundKey:'eisa',
+     opts:['静かな瞑想の踊り','太鼓を打ちながら踊る活発な踊り','水上で行う踊り','仮面をつけた踊り'],ans:1,
+     expl:'✅ 正解！エイサーは沖縄のお盆に先祖の霊を送り出す踊り。パーランクー（小太鼓）や締め太鼓を打ちながら激しく踊ります。今では夏の一大イベントとして親しまれています。'}
+  ]
+}
+];
+
+// ── STATE ──
+const ST={phase:'title',si:0,ii:0,qi:0,answered:false,score:0,results:[]};
+
+// ── HELPERS ──
+const $=id=>document.getElementById(id);
+function setCard(html){
+  const c=$('card');
+  c.innerHTML=html;
+  c.style.animation='none';void c.offsetWidth;c.style.animation='';
+  c.className='card';
+}
+
+function updProgress(){
+  const total=ST.si*4+ST.qi;
+  $('prog-fill').style.width=(total/12*100)+'%';
+  $('score-lbl').textContent=`${ST.score}/12点`;
+  [1,2,3].forEach(i=>{
+    const d=$(`dot-${i}`);d.className='dot';
+    if(i-1<ST.si)d.classList.add('done');
+    else if(i-1===ST.si)d.classList.add('active');
+  });
+}
+
+// ── SCENE ARTS ──
+function artShuri(){
+  return `<div class="scene-art art-shuri">
+    ${[...Array(12)].map((_,i)=>`<div class="sky-star" style="width:${Math.random()*2.5+1}px;height:${Math.random()*2.5+1}px;left:${Math.random()*100}%;top:${Math.random()*55}%;--dur:${Math.random()*2+1.5}s;animation-delay:${Math.random()*3}s"></div>`).join('')}
+    <div class="moon"></div>
+    <div class="ground"></div>
+    <div class="castle-base">
+      <div class="win" style="left:30px;bottom:40px"></div>
+      <div class="win" style="left:60px;bottom:40px"></div>
+      <div class="win" style="right:30px;bottom:40px"></div>
+      <div class="win" style="right:60px;bottom:40px"></div>
+      <div class="win" style="left:45%;bottom:55px"></div>
+    </div>
+    <div class="roof1"></div><div class="roof2"></div><div class="spire"></div>
+    <div class="tree" style="left:12%;bottom:0"></div>
+    <div class="tree" style="left:18%;bottom:0;height:38px;width:18px"></div>
+    <div class="tree" style="right:12%;bottom:0"></div>
+    <div class="tree" style="right:19%;bottom:0;height:42px"></div>
+    <div class="lantern" style="left:28%;bottom:80px"></div>
+    <div class="lantern" style="right:28%;bottom:80px"></div>
+    <div class="art-overlay"></div>
+  </div>`;
+}
+
+function artSea(){
+  return `<div class="scene-art art-sea">
+    <div class="sun"></div>
+    <div class="cloud" style="width:80px;height:22px;top:22px;left:38%"></div>
+    <div class="cloud" style="width:55px;height:16px;top:32px;left:62%"></div>
+    <div class="wave" style="width:280px;height:40px;bottom:95px;left:50%;transform:translateX(-50%)"></div>
+    <div class="wave" style="width:200px;height:28px;bottom:105px;left:50%;transform:translateX(-50%);animation-delay:1s"></div>
+    <div class="coral" style="width:28px;height:38px;bottom:24px;left:15%"></div>
+    <div class="coral" style="width:22px;height:30px;bottom:22px;left:22%;background:#ff8844;animation-delay:.8s"></div>
+    <div class="coral" style="width:34px;height:44px;bottom:24px;right:14%;background:#ff6688"></div>
+    <div class="coral" style="width:20px;height:28px;bottom:20px;right:22%;background:#ffaa44;animation-delay:1.2s"></div>
+    <div class="fish" style="top:55%;animation-duration:7s">🐠</div>
+    <div class="fish" style="top:65%;animation-duration:9s;animation-delay:3s">🐡</div>
+    <div class="fish" style="top:48%;animation-duration:11s;animation-delay:5s;transform:scaleX(-1)">🐟</div>
+    <div class="shell" style="left:35%">🐚</div>
+    <div class="shell" style="left:55%">🦀</div>
+    <div class="shell" style="right:20%">🐚</div>
+    <div class="sand"></div>
+    <div class="art-overlay"></div>
+  </div>`;
+}
+
+function artSunset(){
+  return `<div class="scene-art art-sunset">
+    <div class="setsun"></div>
+    <div class="horizon"></div>
+    <div class="hibiscus" style="left:8%;bottom:70px">🌺</div>
+    <div class="hibiscus" style="left:14%;bottom:60px;animation-delay:.8s;font-size:18px">🌸</div>
+    <div class="hibiscus" style="right:10%;bottom:75px;animation-delay:1.4s">🌺</div>
+    <div class="hibiscus" style="right:20%;bottom:58px;animation-delay:.5s;font-size:16px">🌸</div>
+    <div class="sanshin-wrap">
+      <div class="sanshin-note">♪</div>
+      <div class="sanshin-head"></div>
+      <div class="sanshin-neck"></div>
+      <div class="sanshin-body"></div>
+    </div>
+    <div style="position:absolute;bottom:68px;left:30px;font-size:28px;animation:hibiscusSway 6s ease-in-out infinite alternate">🌴</div>
+    <div style="position:absolute;bottom:68px;right:30px;font-size:26px;animation:hibiscusSway 5s ease-in-out infinite alternate;animation-delay:.6s">🌴</div>
+    <div class="ocean"></div>
+    <div class="reflection" style="height:35px"></div>
+    <div class="beach"></div>
+    <div class="art-overlay"></div>
+  </div>`;
+}
+
+function artTitle(){
+  return `<div class="scene-art art-title" style="height:220px">
+    ${[...Array(16)].map((_,i)=>`<div class="sky-star" style="width:${Math.random()*3+.8}px;height:${Math.random()*3+.8}px;left:${Math.random()*100}%;top:${Math.random()*70}%;--dur:${Math.random()*3+1.5}s;animation-delay:${Math.random()*4}s;background:white;border-radius:50%;position:absolute;animation-name:twinkle;animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:alternate"></div>`).join('')}
+    <div class="big-moon"></div>
+    <div style="position:absolute;bottom:98px;left:50%;transform:translateX(-50%);width:280px;height:70px;background:linear-gradient(180deg,#0a1c0a,#040e04);border-radius:60% 60% 0 0;z-index:3"></div>
+    <div class="palm" style="left:30%;z-index:4;animation:hibiscusSway 5s ease-in-out infinite alternate">🌴</div>
+    <div class="palm" style="right:28%;z-index:4;animation:hibiscusSway 6s ease-in-out infinite alternate;animation-delay:.7s">🌴</div>
+    <div style="position:absolute;bottom:50px;left:38%;font-size:28px;z-index:4;animation:floatEmoji 3.5s ease-in-out infinite">🦁</div>
+    <div class="t-ocean"></div>
+    <div class="t-ref"></div>
+    <div style="position:absolute;bottom:8px;left:20%;font-size:13px;z-index:5">🌺</div>
+    <div style="position:absolute;bottom:6px;right:22%;font-size:11px;z-index:5">🌺</div>
+    <div class="art-overlay"></div>
+  </div>`;
+}
+// float helper (reuse css var)
+const floatStyle=`@keyframes floatEmoji{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}`;
+
+// ── PLAYER BAR ──
+function playerBar(statusTxt='冒険中'){
+  return `<div class="player-bar">
+    <div class="player-avatar-wrap">
+      <div class="player-avatar">${PLAYER.emoji}</div>
+      <div class="player-badge">主</div>
+    </div>
+    <div class="player-info">
+      <div class="player-name">${PLAYER.name}（${PLAYER.nameJp}）</div>
+      <div class="player-role">中国からの留学生 ／ 日本語専攻</div>
+    </div>
+    <div class="player-status">${statusTxt}</div>
+  </div>`;
+}
+
+// ── SCREENS ──
+function renderTitle(){
+  $('prog-row').style.display='none';
+  $('dots').style.display='none';
+  setCard(`
+    ${artTitle()}
+    <div class="title-inner">
+      <div class="t-main">琉球タイムトラベル RPG</div>
+      <div class="t-sub">〜 ${PLAYER.name}の沖縄多文化探求の旅 〜</div>
+      <div class="hero-preview">
+        <div class="hero-ava-big">${PLAYER.emoji}</div>
+        <div class="hero-text">
+          <div class="hero-name">${PLAYER.name}</div>
+          <div class="hero-name-cn">Wang Yuxiang ／ ${PLAYER.nameJp}</div>
+          <div class="hero-desc">中国からの留学生。日本語大学3年生。<br>沖縄の文化と歴史に強い関心を持つ。<br>シーサーに導かれ、時を超えた冒険へ！</div>
+        </div>
+      </div>
+      <div class="t-desc">
+        🌺 あなたは王宇翔（おう・うしょう）。<br>
+        日本語を学ぶ中国人大学生として沖縄に留学中。<br>
+        ある日、謎の守護神・シーサーに出会い、<br>
+        琉球王国から現代まで時を越えた冒険が始まる！<br><br>
+        📖 沖縄の言語・歴史・音楽・料理など<br>
+        多文化の知識を学びながら、文字・画像・音楽の<br>
+        12つのクイズに挑戦。全問正解で「琉球大使」を目指せ！
+      </div>
+      <div class="t-grid">
+        <div class="t-item"><div class="t-ico">🗺️</div><div class="t-lbl">ステージ</div><div class="t-val">3ステージ</div></div>
+        <div class="t-item"><div class="t-ico">❓</div><div class="t-lbl">クイズ</div><div class="t-val">全12問</div></div>
+        <div class="t-item"><div class="t-ico">⏱️</div><div class="t-lbl">プレイ時間</div><div class="t-val">約6分</div></div>
+      </div>
+      <button class="btn-p" onclick="startGame()" style="font-size:16px;padding:15px 48px">▶ 冒険をはじめる</button>
+    </div>
+  `);
+}
+
+function renderIntro(){
+  const s=STAGES[ST.si];
+  const txt=s.intro[ST.ii];
+  const pReply=s.playerReply[ST.ii];
+  const isLast=ST.ii===s.intro.length-1;
+  const artHtml = s.artId==='shuri'?artShuri():s.artId==='sea'?artSea():artSunset();
+  setCard(`
+    <div class="s-banner ${s.bannerCls}">
+      <div class="s-ico">${s.icon}</div>
+      <div>
+        <div class="s-num">STAGE ${s.id} / 3</div>
+        <div class="s-name">${s.name}</div>
+        <div class="s-era">${s.era}</div>
+      </div>
+    </div>
+    ${artHtml}
+    ${playerBar('冒険中')}
+    <div class="dlg-section">
+      <div class="npc-dlg">
+        <div class="npc-av">${s.npc.av}</div>
+        <div class="npc-body">
+          <div class="npc-nm">${s.npc.name}</div>
+          <div class="npc-txt">${txt.replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>
+      <div class="player-reply">
+        <div class="p-av">${PLAYER.emoji}</div>
+        <div class="p-txt">「${pReply}」</div>
+      </div>
+      ${isLast?`<div class="know-card"><div class="know-title">📚 知識メモ</div>${s.knowledge}</div>`:''}
+    </div>
+    <div class="act">
+      ${ST.ii>0?`<button class="btn-s" onclick="prevIntro()">◀ 戻る</button>`:''}
+      <button class="btn-p" onclick="nextIntro()">${isLast?'クイズに挑戦する ▶':'次へ ▶'}</button>
+    </div>
+  `);
+}
+
+function renderQuiz(){
+  const s=STAGES[ST.si];
+  const q=s.quizzes[ST.qi];
+  const artHtml = s.artId==='shuri'?artShuri():s.artId==='sea'?artSea():artSunset();
+  const isLast=isLastGame();
+  const optsHtml=q.opts.map((o,i)=>`<button class="opt" id="opt-${i}" onclick="pickAns(${i})">${['Ａ','Ｂ','Ｃ','Ｄ'][i]}. ${o}</button>`).join('');
+
+  // Multimodal extra block
+  let modalHtml='';
+  if(q.type==='image'){
+    modalHtml=`<div class="modal-img-box">${renderImgQuestion(q.imgKey)}</div>`;
+  } else if(q.type==='music'){
+    modalHtml=`<div class="modal-music-box">
+      <div class="music-player" id="music-player">
+        <div class="music-wave" id="music-wave">
+          ${[...Array(12)].map((_,i)=>`<div class="wave-bar" style="animation-delay:${i*0.08}s"></div>`).join('')}
+        </div>
+        <div class="music-controls">
+          <button class="music-btn" id="play-btn" onclick="playSound('${q.soundKey}')">
+            ▶ 音を聴く
+          </button>
+          <div class="music-label" id="music-label">ボタンを押してください</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  setCard(`
+    <div class="s-banner ${s.bannerCls}">
+      <div class="s-ico">${s.icon}</div>
+      <div>
+        <div class="s-num">STAGE ${s.id} — クイズ ${ST.qi+1}/${s.quizzes.length}</div>
+        <div class="s-name">${s.name}</div>
+        <div class="s-era">${s.era}</div>
+      </div>
+    </div>
+    ${artHtml}
+    ${playerBar('挑戦中')}
+    <div class="quiz-wrap" style="padding-top:18px">
+      <div class="quiz-q">
+        <div class="q-header">
+          <div class="q-badge">${q.type==='image'?'🖼️ 画像問題':q.type==='music'?'🎵 音楽問題':'❓ 問題'}</div>
+          <div class="q-num">第${ST.si*4+ST.qi+1}問 / 全12問</div>
+        </div>
+        <div class="q-text">${q.q}</div>
+      </div>
+      ${modalHtml}
+      <div class="opts">${optsHtml}</div>
+      <div class="fb" id="fb"></div>
+    </div>
+    <div class="act">
+      <button class="btn-p" id="next-btn" onclick="nextQ()" disabled>
+        ${isLast?'結果を見る 🎉':isLastStage()?'次のステージへ ▶':'次の問題へ ▶'}
+      </button>
+    </div>
+  `);
+  ST.answered=false;
+}
+
+function isLastStage(){return ST.qi===STAGES[ST.si].quizzes.length-1;}
+function isLastGame(){return ST.si===STAGES.length-1&&isLastStage();}
+
+function renderResult(){
+  $('prog-fill').style.width='100%';
+  $('score-lbl').textContent=`${ST.score}/12点`;
+  const pct=ST.score/12;
+  let rank,rIco,msg;
+  if(pct===1){rank='琉球大使';rIco='🏆';msg=`完璧！${PLAYER.name}は沖縄多文化の真の理解者です。\nシーサーも心から喜んでいます！`;}
+  else if(pct>=.75){rank='文化探求者';rIco='🌺';msg=`すばらしい！${PLAYER.name}は沖縄文化への深い理解を示しました。\nもっと探求すれば、琉球大使になれますよ！`;}
+  else if(pct>=.5){rank='島の旅人';rIco='⚓';msg=`なかなかです！沖縄の文化をある程度理解できました。\n${PLAYER.name}、もっと深く探求してみてください。`;}
+  else{rank='新米旅人';rIco='🗺️';msg=`始まりは誰でも新米です、${PLAYER.name}！\nもう一度挑戦してみましょう。沖縄が待っています。`;}
+  const revHtml=ST.results.map((r,i)=>`<div class="rev-row"><div class="rev-ico">${r.ok?'✅':'❌'}</div><div>第${i+1}問: ${r.q}</div></div>`).join('');
+  setCard(`
+    <div class="s-banner bR">
+      <div class="s-ico">🎉</div>
+      <div>
+        <div class="s-num">GAME CLEAR</div>
+        <div class="s-name">冒険終了！</div>
+        <div class="s-era">沖縄多文化探求の旅 完了</div>
+      </div>
+    </div>
+    ${playerBar('クリア')}
+    <div class="result-inner">
+      <div style="font-size:13px;color:rgba(255,255,255,.55)">${PLAYER.name}の最終スコア</div>
+      <div class="r-circle">
+        <div class="r-num">${ST.score}</div>
+        <div class="r-tot">/ 12 点</div>
+      </div>
+      <div class="r-rank-ico">${rIco}</div>
+      <div class="r-rank-txt">${rank}</div>
+      <div class="r-msg">${msg.replace(/\n/g,'<br>')}</div>
+      <div class="r-review">
+        <div class="r-rev-ttl">📋 回答の振り返り</div>
+        ${revHtml}
+      </div>
+      <div class="r-msg-box">
+        <div class="r-msg-title">🌺 シーサーからのメッセージ</div>
+        ${PLAYER.name}よ、よく頑張ったのじゃ！<br>
+        沖縄は「ちゃんぷるー文化」の宝庫。<br>
+        琉球・中国・日本・アメリカの文化が美しく混ざり合い、<br>
+        独自の文化が生まれたのじゃ。<br>
+        <strong>「いちゃりばちょーでー（出会えば皆兄弟）」</strong><br>
+        — この精神を、いつまでも忘れないでおくれ！
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-p" onclick="startGame()">🔄 もう一度挑戦</button>
+        <button class="btn-s" onclick="renderTitle()">🏠 タイトルへ</button>
+      </div>
+    </div>
+  `);
+  if(pct>=.78)shootParticles();
+}
+
+// ── ACTIONS ──
+function startGame(){
+  Object.assign(ST,{phase:'intro',si:0,ii:0,qi:0,score:0,results:[],answered:false});
+  $('prog-row').style.display='flex';
+  $('dots').style.display='flex';
+  updProgress();renderIntro();
+}
+function nextIntro(){
+  const s=STAGES[ST.si];
+  if(ST.ii<s.intro.length-1){ST.ii++;renderIntro();}
+  else{ST.phase='quiz';renderQuiz();}
+}
+function prevIntro(){if(ST.ii>0){ST.ii--;renderIntro();}}
+function pickAns(idx){
+  if(ST.answered)return;ST.answered=true;
+  const q=STAGES[ST.si].quizzes[ST.qi];
+  const ok=idx===q.ans;
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.getElementById(`opt-${idx}`).classList.add(ok?'correct':'wrong');
+  if(!ok)document.getElementById(`opt-${q.ans}`).classList.add('correct');
+  if(ok)ST.score++;
+  const fb=$('fb');
+  fb.className=`fb show ${ok?'fb-ok':'fb-ng'}`;
+  fb.innerHTML=ok?q.expl:`❌ 残念！正解は「${q.opts[q.ans]}」でした。<br>${q.expl}`;
+  ST.results.push({ok,q:q.q});
+  $('next-btn').disabled=false;
+  updProgress();
+}
+function nextQ(){
+  if(ST.qi<STAGES[ST.si].quizzes.length-1){ST.qi++;renderQuiz();}
+  else if(ST.si<STAGES.length-1){ST.si++;ST.ii=0;ST.qi=0;ST.phase='intro';updProgress();renderIntro();}
+  else{ST.phase='result';$('dots').style.display='none';renderResult();}
+}
+function shootParticles(){
+  const emojis=['🌺','⭐','✨','🎊','🎉','🏆','🦁','🎵','🐚','🌊'];
+  const c=$('particles');
+  for(let i=0;i<28;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='ptcl';
+      p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.left=Math.random()*100+'vw';
+      p.style.animationDuration=(Math.random()*2+2.2)+'s';
+      c.appendChild(p);setTimeout(()=>p.remove(),4800);
+    },i*110);
+  }
+}
+
+// ── WEB AUDIO: 音楽合成 ──
+let audioCtx=null;
+function getAudioCtx(){
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// 三線音色：物理モデリング版
+// 特徴：蛇皮の共鳴ノイズ層 + 鋭い倍音 + 素早いpluckエンベロープ
+function playSanshinNote(ctx, freq, t, vol){
+  const sr = ctx.sampleRate;
+
+  // ── 1. Karplus-Strong 風プラック（弦の物理モデル）──
+  const bufLen = Math.round(sr / freq);
+  const ksBuffer = ctx.createBuffer(1, bufLen, sr);
+  const ksData = ksBuffer.getChannelData(0);
+  // ノイズで初期化
+  for(let i=0;i<bufLen;i++) ksData[i] = Math.random()*2-1;
+  const ksSrc = ctx.createBufferSource();
+  ksSrc.buffer = ksBuffer;
+  ksSrc.loop = true;
+
+  // ローパスフィルタ（弦の減衰シミュレーション）
+  const ksFilter = ctx.createBiquadFilter();
+  ksFilter.type = 'lowpass';
+  ksFilter.frequency.value = freq * 3.5;
+  ksFilter.Q.value = 0.8;
+
+  const ksGain = ctx.createGain();
+  ksGain.gain.setValueAtTime(0, t);
+  ksGain.gain.linearRampToValueAtTime(vol * 0.55, t + 0.005);
+  ksGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+
+  ksSrc.connect(ksFilter);
+  ksFilter.connect(ksGain);
+  ksGain.connect(ctx.destination);
+  ksSrc.start(t);
+  ksSrc.stop(t + 0.6);
+
+  // ── 2. 倍音オシレータ群（三線の明るい音色）──
+  // 基音
+  const o1 = ctx.createOscillator();
+  o1.type = 'sawtooth';
+  o1.frequency.value = freq;
+  const g1 = ctx.createGain();
+  g1.gain.setValueAtTime(0, t);
+  g1.gain.linearRampToValueAtTime(vol * 0.22, t + 0.008);
+  g1.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+
+  // 2倍音（三線の特徴的な明るさ）
+  const o2 = ctx.createOscillator();
+  o2.type = 'sawtooth';
+  o2.frequency.value = freq * 2.0;
+  const g2 = ctx.createGain();
+  g2.gain.setValueAtTime(0, t);
+  g2.gain.linearRampToValueAtTime(vol * 0.12, t + 0.006);
+  g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+
+  // 3倍音
+  const o3 = ctx.createOscillator();
+  o3.type = 'triangle';
+  o3.frequency.value = freq * 3.0;
+  const g3 = ctx.createGain();
+  g3.gain.setValueAtTime(0, t);
+  g3.gain.linearRampToValueAtTime(vol * 0.06, t + 0.005);
+  g3.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+
+  // ハイパスでシャリ感
+  const hpf = ctx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = freq * 0.8;
+
+  [o1,o2,o3].forEach((o,i)=>{
+    const g=[g1,g2,g3][i];
+    o.connect(g); g.connect(hpf);
+    o.start(t); o.stop(t+0.5);
+  });
+  hpf.connect(ctx.destination);
+
+  // ── 3. 蛇皮共鳴ノイズ（サーッとした質感）──
+  const noiseDur = 0.04;
+  const nBuf = ctx.createBuffer(1, Math.ceil(sr * noiseDur), sr);
+  const nData = nBuf.getChannelData(0);
+  for(let i=0;i<nData.length;i++) nData[i] = (Math.random()*2-1) * Math.exp(-i/(sr*0.012));
+  const nSrc = ctx.createBufferSource();
+  nSrc.buffer = nBuf;
+  const nBPF = ctx.createBiquadFilter();
+  nBPF.type = 'bandpass';
+  nBPF.frequency.value = freq * 1.5;
+  nBPF.Q.value = 2.0;
+  const nGain = ctx.createGain();
+  nGain.gain.value = vol * 0.18;
+  nSrc.connect(nBPF); nBPF.connect(nGain); nGain.connect(ctx.destination);
+  nSrc.start(t);
+}
+
+function playSanshin(){
+  const ctx = getAudioCtx();
+  // 琉球音階：C D# F G A# C（沖縄音階 = 1,3,4,5,7）
+  // 実際の三線チューニング: C F A# → メロディ展開
+  const melody = [
+    // イントロ：低弦ジャカジャカ
+    {freq:261.6, t:0.00, v:0.9},   // C4
+    {freq:349.2, t:0.20, v:0.8},   // F4
+    {freq:440.0, t:0.40, v:0.85},  // A4
+    {freq:523.3, t:0.60, v:0.9},   // C5
+    // メインフレーズ
+    {freq:587.3, t:0.90, v:0.85},  // D5
+    {freq:523.3, t:1.15, v:0.7},   // C5
+    {freq:440.0, t:1.35, v:0.75},  // A4
+    {freq:349.2, t:1.55, v:0.8},   // F4
+    // 返し
+    {freq:392.0, t:1.85, v:0.85},  // G4
+    {freq:440.0, t:2.05, v:0.9},   // A4
+    {freq:523.3, t:2.25, v:0.85},  // C5
+    {freq:587.3, t:2.45, v:0.75},  // D5
+    // エンディング
+    {freq:523.3, t:2.75, v:0.8},   // C5
+    {freq:440.0, t:2.95, v:0.7},   // A4
+    {freq:349.2, t:3.15, v:0.65},  // F4
+    {freq:261.6, t:3.45, v:0.9},   // C4（締め）
+  ];
+
+  melody.forEach(n => playSanshinNote(ctx, n.freq, ctx.currentTime + n.t, n.v));
+
+  setMusicLabel('三線の音色を聴いています♪');
+  setTimeout(()=>setMusicLabel('もう一度聴くには再生ボタンを押してください'), 4200);
+}
+
+// エイサー太鼓リズム
+function playEisa(){
+  const ctx=getAudioCtx();
+  // Pattern: kick kick snare kick kick snare x2
+  const pattern=[0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75];
+  const types=  ['k','k', 's', 'k', 'k', 's', 'k', 'k', 's', 'k', 'k', 's'];
+  pattern.forEach((t,i)=>{
+    const time=ctx.currentTime+t;
+    if(types[i]==='k'){
+      // 太鼓 kick
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.type='sine'; osc.frequency.setValueAtTime(180,time);
+      osc.frequency.exponentialRampToValueAtTime(40,time+0.15);
+      gain.gain.setValueAtTime(0.7,time);
+      gain.gain.exponentialRampToValueAtTime(0.001,time+0.2);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(time); osc.stop(time+0.25);
+    } else {
+      // スネア
+      const buf=ctx.createBuffer(1,ctx.sampleRate*0.12,ctx.sampleRate);
+      const data=buf.getChannelData(0);
+      for(let j=0;j<data.length;j++) data[j]=(Math.random()*2-1)*Math.exp(-j/(ctx.sampleRate*0.04));
+      const src=ctx.createBufferSource();
+      const gain=ctx.createGain();
+      src.buffer=buf; gain.gain.value=0.45;
+      src.connect(gain); gain.connect(ctx.destination);
+      src.start(time);
+    }
+  });
+  setMusicLabel('エイサーの太鼓を聴いています🥁');
+  setTimeout(()=>setMusicLabel('もう一度聴くには再生ボタンを押してください'),3500);
+}
+
+function playSound(key){
+  const btn=document.getElementById('play-btn');
+  if(btn){btn.disabled=true;btn.textContent='♪ 再生中...';}
+  const wave=document.getElementById('music-wave');
+  if(wave) wave.classList.add('playing');
+  if(key==='sanshin') playSanshin();
+  else if(key==='eisa') playEisa();
+  const dur=key==='sanshin'?4500:3500;
+  setTimeout(()=>{
+    if(btn){btn.disabled=false;btn.textContent='▶ もう一度聴く';}
+    if(wave) wave.classList.remove('playing');
+  },dur);
+}
+
+function setMusicLabel(txt){
+  const el=document.getElementById('music-label');
+  if(el) el.textContent=txt;
+}
+
+// ── CSS IMAGE RENDERER ──
+function renderImgQuestion(key){
+  if(key==='shisa') return renderShisaImg();
+  return '';
+}
+
+function renderShisaImg(){
+  // CSS/SVGで描くシーサー
+  return `<div class="img-q-frame">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="shisa-svg">
+      <!-- 台座 -->
+      <rect x="40" y="165" width="120" height="25" rx="5" fill="#8B4513" opacity="0.9"/>
+      <rect x="48" y="155" width="104" height="16" rx="4" fill="#A0522D"/>
+      <!-- 体 -->
+      <ellipse cx="100" cy="130" rx="42" ry="36" fill="#D2691E"/>
+      <ellipse cx="100" cy="128" rx="38" ry="32" fill="#DEB887"/>
+      <!-- たてがみ -->
+      ${[...Array(10)].map((_,i)=>{
+        const a=-90+i*20; const r=52;
+        const x=100+r*Math.cos(a*Math.PI/180);
+        const y=110+r*Math.sin(a*Math.PI/180);
+        return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="9" ry="14" fill="#8B0000" transform="rotate(${a+90},${x.toFixed(1)},${y.toFixed(1)})" opacity="0.85"/>`;
+      }).join('')}
+      <!-- 頭 -->
+      <ellipse cx="100" cy="96" rx="36" ry="32" fill="#D2691E"/>
+      <ellipse cx="100" cy="94" rx="32" ry="28" fill="#DEB887"/>
+      <!-- 耳 -->
+      <ellipse cx="70" cy="72" rx="10" ry="14" fill="#D2691E" transform="rotate(-20,70,72)"/>
+      <ellipse cx="130" cy="72" rx="10" ry="14" fill="#D2691E" transform="rotate(20,130,72)"/>
+      <ellipse cx="70" cy="72" rx="6" ry="9" fill="#FF8C69" transform="rotate(-20,70,72)"/>
+      <ellipse cx="130" cy="72" rx="6" ry="9" fill="#FF8C69" transform="rotate(20,130,72)"/>
+      <!-- 目 -->
+      <circle cx="86" cy="88" r="10" fill="white"/>
+      <circle cx="114" cy="88" r="10" fill="white"/>
+      <circle cx="88" cy="88" r="7" fill="#1a1a1a"/>
+      <circle cx="116" cy="88" r="7" fill="#1a1a1a"/>
+      <circle cx="90" cy="86" r="3" fill="#FF4500" opacity="0.8"/>
+      <circle cx="118" cy="86" r="3" fill="#FF4500" opacity="0.8"/>
+      <circle cx="91" cy="85" r="1.5" fill="white"/>
+      <circle cx="119" cy="85" r="1.5" fill="white"/>
+      <!-- 鼻 -->
+      <ellipse cx="100" cy="100" rx="8" ry="6" fill="#C8602A"/>
+      <circle cx="96" cy="100" r="3" fill="#8B3010"/>
+      <circle cx="104" cy="100" r="3" fill="#8B3010"/>
+      <!-- 口（大きく開いている） -->
+      <path d="M78 112 Q100 128 122 112" stroke="#8B3010" stroke-width="2.5" fill="none"/>
+      <path d="M78 112 Q100 132 122 112 Q110 118 100 120 Q90 118 78 112Z" fill="#8B0000" opacity="0.7"/>
+      <!-- 歯 -->
+      <rect x="84" y="112" width="6" height="9" rx="2" fill="white"/>
+      <rect x="92" y="114" width="5" height="7" rx="1.5" fill="white"/>
+      <rect x="103" y="114" width="5" height="7" rx="1.5" fill="white"/>
+      <rect x="110" y="112" width="6" height="9" rx="2" fill="white"/>
+      <!-- 前足 -->
+      <ellipse cx="74" cy="152" rx="16" ry="12" fill="#D2691E"/>
+      <ellipse cx="126" cy="152" rx="16" ry="12" fill="#D2691E"/>
+      <!-- 爪 -->
+      ${[-6,-1,4].map(dx=>`<ellipse cx="${74+dx}" cy="161" rx="3" ry="5" fill="#A0522D"/>`).join('')}
+      ${[-4,1,6].map(dx=>`<ellipse cx="${126+dx}" cy="161" rx="3" ry="5" fill="#A0522D"/>`).join('')}
+      <!-- 文様（紅型風） -->
+      <circle cx="100" cy="130" r="8" fill="none" stroke="#FF6347" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="100" cy="130" r="4" fill="#FF6347" opacity="0.4"/>
+    </svg>
+    <div class="img-caption">？？？ — これは何ですか</div>
+  </div>`;
+}
+
+// ── INIT ──
+renderTitle();
+</script>
+</body>
+</html>
